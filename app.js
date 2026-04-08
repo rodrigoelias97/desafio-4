@@ -10,6 +10,8 @@ app.use(express.json());
 
 // Importa as rotas de clientes (estrutura REST organizada)
 const clientesRoutes = require('./rest/routes/clientes');
+// Importa as rotas de pedidos
+const pedidosRoutes = require('./routes/pedidos');
 
 // Configura o Swagger UI em /api-docs
 const setupSwagger = require('./swagger');
@@ -17,6 +19,8 @@ setupSwagger(app);
 
 // Define o prefixo para as rotas de clientes
 app.use('/clientes', clientesRoutes);
+// Define o prefixo para as rotas de pedidos
+app.use('/pedidos', pedidosRoutes);
 
 // Rota raiz para verificar se a API está funcionando
 app.get('/', (req, res) => {
@@ -28,7 +32,10 @@ app.get('/', (req, res) => {
       'GET /clientes/:codigo': 'Buscar cliente por código',
       'PUT /clientes/:codigo': 'Atualizar cliente',
       'PATCH /clientes/:codigo': 'Atualizar parcialmente cliente',
-      'DELETE /clientes/:codigo': 'Remover cliente'
+      'DELETE /clientes/:codigo': 'Remover cliente',
+      'POST /pedidos': 'Criar pedido',
+      'GET /pedidos/:codigo': 'Buscar pedido por código',
+      'PATCH /pedidos/:codigo/status': 'Atualizar status do pedido'
     }
   });
 });

@@ -1,6 +1,6 @@
-# API de Clientes - Node.js com Express
+# API de Clientes e Pedidos - Node.js com Express
 
-Esta é uma API REST simples para cadastro de clientes, desenvolvida em Node.js utilizando o framework Express. Os dados são armazenados apenas em memória (array), sem uso de banco de dados.
+Esta é uma API REST simples para cadastro de clientes e gerenciamento de pedidos, desenvolvida em Node.js utilizando o framework Express. Os dados são armazenados apenas em memória (array), sem uso de banco de dados.
 
 ## Funcionalidades
 
@@ -9,6 +9,9 @@ Esta é uma API REST simples para cadastro de clientes, desenvolvida em Node.js 
 - Busca de cliente por código
 - Atualização de dados do cliente (exceto código)
 - Remoção de cliente
+- Criação de pedidos com validações
+- Busca de pedido por código
+- Atualização de status do pedido
 
 ## Estrutura do Cliente
 
@@ -20,6 +23,19 @@ Esta é uma API REST simples para cadastro de clientes, desenvolvida em Node.js 
 - `email`: Opcional, formato válido
 - `dataCadastro`: Obrigatório, formato DD/MM/AAAA
 
+## Estrutura do Pedido
+
+- `codigo`: Gerado automaticamente (único, incremental)
+- `status`: Gerado automaticamente com valor inicial `criado`
+- `itens`: Obrigatório, array com ao menos um item
+- `valor`: Obrigatório, número maior que zero
+- `email`: Obrigatório, formato válido
+
+### Estrutura de cada item do pedido
+
+- `produto`: Nome ou descrição do produto
+- `quantidade`: Quantidade solicitada
+
 ## Endpoints
 
 - `POST /clientes` - Criar cliente
@@ -28,6 +44,9 @@ Esta é uma API REST simples para cadastro de clientes, desenvolvida em Node.js 
 - `PUT /clientes/:codigo` - Atualizar cliente
 - `PATCH /clientes/:codigo` - Atualizar parcialmente cliente
 - `DELETE /clientes/:codigo` - Remover cliente
+- `POST /pedidos` - Criar pedido
+- `GET /pedidos/:codigo` - Buscar pedido por código
+- `PATCH /pedidos/:codigo/status` - Atualizar status do pedido
 
 ## Como executar
 
@@ -98,6 +117,42 @@ Content-Type: application/json
 DELETE /clientes/1
 ```
 
+### Criar pedido
+```bash
+POST /pedidos
+Content-Type: application/json
+
+{
+  "itens": [
+    {
+      "produto": "Notebook",
+      "quantidade": 1
+    },
+    {
+      "produto": "Mouse",
+      "quantidade": 2
+    }
+  ],
+  "valor": 4599.9,
+  "email": "joao@email.com"
+}
+```
+
+### Buscar pedido
+```bash
+GET /pedidos/1
+```
+
+### Atualizar status do pedido
+```bash
+PATCH /pedidos/1/status
+Content-Type: application/json
+
+{
+  "status": "aprovado"
+}
+```
+
 ## Validações
 
 - CPF: Deve ser válido segundo algoritmo brasileiro e único
@@ -105,13 +160,22 @@ DELETE /clientes/1
 - Telefone: Formato brasileiro (XX) XXXXX-XXXX
 - Email: Formato válido
 - Data: Formato DD/MM/AAAA e data válida
+- Pedido: Deve conter ao menos um item
+- Valor do pedido: Deve ser um número maior que zero
+- Email do pedido: Deve estar em formato válido
+- Status: Um pedido aprovado não pode ser cancelado
 
 ## Estrutura do projeto
 
 - `app.js`: Arquivo principal
 - `swagger.js`: Configuração do Swagger para documentação da API
 - `rest/routes/clientes.js`: Rotas da API com documentação Swagger
+- `routes/pedidos.js`: Rotas de pedidos com documentação Swagger
 - `src/models/clientesModel.js`: Modelo de dados do cliente
+- `src/models/pedidosModel.js`: Modelo de dados do pedido
 - `src/services/clientesService.js`: Lógica de negócio para clientes
+- `src/services/pedidosService.js`: Lógica de negócio para pedidos
 - `utils/validations.js`: Validações de dados
-- `utils/validations.js`: Validações manuais
+- `tests/clientesService.test.js`: Testes dos serviços de clientes
+- `tests/pedidos.test.js`: Testes das rotas e regras de pedidos
+- `tests/validations.test.js`: Testes das validações
